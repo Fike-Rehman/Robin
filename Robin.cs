@@ -37,7 +37,22 @@ namespace Robin
                     tbOutputConsole.AppendText($"{Environment.NewLine} Please select an input file.");
                     return;
                 }
-                _inputFileProcessor.ProcessInputFile(_inputFilePath);
+                var scriptTexts = _inputFileProcessor.ProcessInputFile(_inputFilePath);
+
+                // display the review modal:
+                using(var reviewModal = new ReviewForm(scriptTexts))
+                {
+                    var modalResult = reviewModal.ShowDialog();
+
+                    if (modalResult == DialogResult.OK && reviewModal.ContinueProcessing)
+                    {
+                        tbOutputConsole.AppendText($"{Environment.NewLine} Review completed successfully.");
+                    }
+                    else
+                    {
+                        tbOutputConsole.AppendText($"{Environment.NewLine} Review cancelled.");
+                    }
+                }
             }
             catch (Exception ex)
             {
