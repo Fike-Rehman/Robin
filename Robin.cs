@@ -1,12 +1,17 @@
+using Robin.InputFileProcessor;
+
 namespace Robin
 {
     public partial class Robin : Form
     {
         private string _inputFilePath; 
+        private readonly IInputFileProcessor _inputFileProcessor;
 
-        public Robin()
+        public Robin(IInputFileProcessor inputFileProcessor)
         {
             InitializeComponent();
+
+            _inputFileProcessor = inputFileProcessor ?? throw new ArgumentNullException(nameof(inputFileProcessor));
 
             _inputFilePath = string.Empty;
 
@@ -25,12 +30,24 @@ namespace Robin
 
         private void btnGenerate_Click(object? sender, EventArgs e)
         {
-           MessageBox.Show("Generate button clicked");
+            try
+            {
+                if (string.IsNullOrEmpty(_inputFilePath))
+                {
+                    tbOutputConsole.AppendText($"{Environment.NewLine} Please select an input file.");
+                    return;
+                }
+                _inputFileProcessor.ProcessInputFile(_inputFilePath);
+            }
+            catch (Exception ex)
+            {
+                tbOutputConsole.AppendText($"{Environment.NewLine} Error: {ex.Message}");
+            }
         }
 
         private void InputFileBtn_Click(object? sender, EventArgs e)
         {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (var openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Filter = "CSV files (*.csv)|*.csv";
                 openFileDialog.Title = "Select a CSV File";

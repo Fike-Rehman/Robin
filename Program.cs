@@ -27,7 +27,7 @@ namespace Robin
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<Robin>();
-            services.AddSingleton<IInputFileProcessor, MasterInputFileProcessor>();
+            services.AddSingleton<IInputFileProcessor, InputCSVFileProcessor>();
         }
     }
 }
