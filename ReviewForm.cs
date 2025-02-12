@@ -12,12 +12,15 @@ namespace Robin
 {
     public partial class ReviewForm : Form
     {
+        private IReadOnlyList<string> _scripts;
+
         public bool ContinueProcessing { get; set; } = false;
 
         public ReviewForm(IReadOnlyList<string> scripts)
         {
             InitializeComponent();
-            InitializeDataGrid(scripts);
+            _scripts = scripts;
+           
         }
 
         private void btnReviewContinue_Click(object sender, EventArgs e)
@@ -34,7 +37,12 @@ namespace Robin
             this.Close();
         }
 
-        private void InitializeDataGrid(IReadOnlyList<string> scripts)
+        private void ReviewForm_Load(object sender, EventArgs e)
+        {
+            InitializeDataGrid();
+        }
+
+        private void InitializeDataGrid()
         {
             dataGridReview.Columns.Clear();
             dataGridReview.Rows.Clear();
@@ -46,7 +54,7 @@ namespace Robin
             {
                 HeaderText = "Accept",
                 Name = "AcceptColumn",
-                Width = 50,
+                Width = 80,
                 ReadOnly = false // Allows user selection
             };
             dataGridReview.Columns.Add(checkboxColumn);
@@ -56,22 +64,48 @@ namespace Robin
             {
                 HeaderText = "Scripts",
                 Name = "ScriptsColumn",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
                 ReadOnly = true
             };
             dataGridReview.Columns.Add(scriptsColumn);
 
-            dataGridReview.ColumnCount = 2;
-            dataGridReview.Columns[0].Name = "";
-            dataGridReview.Columns[1].Name = "Scripts";
-
-            foreach (var script in scripts)
+            foreach (var script in _scripts)
             {
                 dataGridReview.Rows.Add(false, script);
             }
 
             dataGridReview.AllowUserToAddRows = false;
             dataGridReview.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridReview.ScrollBars = ScrollBars.None;
+
+            AdjustGridSize();
+
+            // TODO: doesn't adjust the form as expecected. Come bakc to this later
+            AdjustFormSize();
+        }
+
+        private void AdjustGridSize()
+        {
+            // Get total height needed for all rows and headers
+            int totalRowHeight = dataGridReview.Rows.Cast<DataGridViewRow>().Sum(r => r.Height);
+            int totalHeight = totalRowHeight + dataGridReview.ColumnHeadersHeight;
+
+            // Get total width of columns + padding
+             int totalWidth = dataGridReview.Columns.Cast<DataGridViewColumn>().Sum(c => c.Width) + 3;
+  
+            // Resize DataGridView to match content
+            dataGridReview.Size = new Size(totalWidth, totalHeight);
+        }
+
+        private void AdjustFormSize()
+        {
+            // Adjust form width based on DataGridView content
+            int formPadding = 80; // Padding to prevent overlap
+
+            int girdWidth = dataGridReview.Size.Width;
+            int gridHeight = dataGridReview.Size.Height;
+
+            this.Size = new Size(dataGridReview.PreferredSize.Width + formPadding, dataGridReview.PreferredSize.Height + formPadding);
         }
     }
 }

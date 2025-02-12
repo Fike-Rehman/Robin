@@ -33,8 +33,8 @@
             cbRewiewGridColumn = new DataGridViewCheckBoxColumn();
             tbReviewGridColumn = new DataGridViewTextBoxColumn();
             lblReviewMessage = new Label();
-            btnReviewContinue = new Button();
             btnReviewCancel = new Button();
+            btnReviewContinue = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridReview).BeginInit();
             SuspendLayout();
             // 
@@ -44,6 +44,7 @@
             dataGridReview.AllowUserToDeleteRows = false;
             dataGridReview.AllowUserToResizeColumns = false;
             dataGridReview.AllowUserToResizeRows = false;
+            dataGridReview.BorderStyle = BorderStyle.None;
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = SystemColors.Control;
             dataGridViewCellStyle1.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
@@ -55,10 +56,10 @@
             dataGridReview.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridReview.Columns.AddRange(new DataGridViewColumn[] { cbRewiewGridColumn, tbReviewGridColumn });
             dataGridReview.GridColor = SystemColors.ActiveBorder;
-            dataGridReview.Location = new Point(34, 80);
+            dataGridReview.Location = new Point(32, 86);
             dataGridReview.Margin = new Padding(3, 4, 3, 4);
             dataGridReview.Name = "dataGridReview";
-            dataGridReview.Size = new Size(1325, 693);
+            dataGridReview.Size = new Size(1325, 317);
             dataGridReview.TabIndex = 0;
             // 
             // cbRewiewGridColumn
@@ -81,22 +82,10 @@
             lblReviewMessage.TabIndex = 1;
             lblReviewMessage.Text = "Please Review following Scripts carefully:";
             // 
-            // btnReviewContinue
-            // 
-            btnReviewContinue.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnReviewContinue.Location = new Point(1113, 821);
-            btnReviewContinue.Margin = new Padding(3, 4, 3, 4);
-            btnReviewContinue.Name = "btnReviewContinue";
-            btnReviewContinue.Size = new Size(114, 43);
-            btnReviewContinue.TabIndex = 2;
-            btnReviewContinue.Text = "Continue";
-            btnReviewContinue.UseVisualStyleBackColor = true;
-            btnReviewContinue.Click += btnReviewContinue_Click;
-            // 
             // btnReviewCancel
             // 
             btnReviewCancel.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnReviewCancel.Location = new Point(1245, 821);
+            btnReviewCancel.Location = new Point(765, 433);
             btnReviewCancel.Margin = new Padding(3, 4, 3, 4);
             btnReviewCancel.Name = "btnReviewCancel";
             btnReviewCancel.Size = new Size(114, 43);
@@ -105,19 +94,38 @@
             btnReviewCancel.UseVisualStyleBackColor = true;
             btnReviewCancel.Click += btnReviewCancel_Click;
             // 
+            // btnReviewContinue
+            // 
+            btnReviewContinue.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnReviewContinue.Location = new Point(468, 433);
+            btnReviewContinue.Margin = new Padding(3, 4, 3, 4);
+            btnReviewContinue.Name = "btnReviewContinue";
+            btnReviewContinue.Size = new Size(114, 43);
+            btnReviewContinue.TabIndex = 2;
+            btnReviewContinue.Text = "Continue";
+            btnReviewContinue.UseVisualStyleBackColor = true;
+            btnReviewContinue.Click += btnReviewContinue_Click;
+            // 
             // ReviewForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1401, 895);
+            AutoSize = true;
+            CancelButton = btnReviewCancel;
+            ClientSize = new Size(1394, 501);
+            ControlBox = false;
             Controls.Add(btnReviewCancel);
             Controls.Add(btnReviewContinue);
             Controls.Add(lblReviewMessage);
             Controls.Add(dataGridReview);
             Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Margin = new Padding(3, 4, 3, 4);
+            MaximizeBox = false;
             Name = "ReviewForm";
+            ShowInTaskbar = false;
             Text = "ReviewForm";
+            TopMost = true;
+            Load += ReviewForm_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridReview).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -129,7 +137,7 @@
         private DataGridViewCheckBoxColumn cbRewiewGridColumn;
         private DataGridViewTextBoxColumn tbReviewGridColumn;
         private Label lblReviewMessage;
-        private Button btnReviewContinue;
         private Button btnReviewCancel;
+        private Button btnReviewContinue;
     }
 }
