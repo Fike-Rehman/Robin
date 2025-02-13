@@ -1,9 +1,12 @@
 using Robin.InputFileProcessor;
+using System.Windows.Forms;
 
 namespace Robin
 {
     public partial class Robin : Form
     {
+        const int REVIEW_GRID_INIT_NUM_ROWS = 13;
+
         private string _inputFilePath; 
         private readonly IInputFileProcessor _inputFileProcessor;
 
@@ -16,7 +19,7 @@ namespace Robin
             _inputFilePath = string.Empty;
 
             InputFileBtn.Click += this.InputFileBtn_Click;
-            btnGenerate.Click += this.btnGenerate_Click;
+          
         }
 
         private void Robin_Load(object? sender, EventArgs e)
@@ -24,42 +27,11 @@ namespace Robin
             if (string.IsNullOrEmpty(_inputFilePath))
             {
                 lblFilePath.Text =  string.Empty;
-                btnGenerate.Enabled = false;
+
+                InitializeScriptsReviewGrid();
+                AdjustReviewGridSize();
             }
         }
-
-        private void btnGenerate_Click(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(_inputFilePath))
-                {
-                    tbOutputConsole.AppendText($"{Environment.NewLine} Please select an input file.");
-                    return;
-                }
-                var scriptTexts = _inputFileProcessor.ProcessInputFile(_inputFilePath);
-
-                // display the review modal:
-                using(var reviewModal = new ReviewForm(scriptTexts))
-                {
-                    var modalResult = reviewModal.ShowDialog();
-
-                    if (modalResult == DialogResult.OK && reviewModal.ContinueProcessing)
-                    {
-                        tbOutputConsole.AppendText($"{Environment.NewLine} Review completed successfully.");
-                    }
-                    else
-                    {
-                        tbOutputConsole.AppendText($"{Environment.NewLine} Review cancelled.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                tbOutputConsole.AppendText($"{Environment.NewLine} Error: {ex.Message}");
-            }
-        }
-
         private void InputFileBtn_Click(object? sender, EventArgs e)
         {
             using (var openFileDialog = new OpenFileDialog())
@@ -71,10 +43,73 @@ namespace Robin
                 {
                     _inputFilePath = openFileDialog.FileName;
                     lblFilePath.Text = _inputFilePath;
-                    btnGenerate.Enabled = true;
+
+                    PopulateScriptsReviewGrid();
 
                     tbOutputConsole.AppendText($"{Environment.NewLine} Input File Selected: {_inputFilePath}");
+
+                    
                 }
+            }
+        }
+
+       private void InitializeScriptsReviewGrid()
+       {
+            dgScriptsReview.Columns.Clear();
+            dgScriptsReview.Rows.Clear();
+            dgScriptsReview.RowHeadersVisible = false;
+            dgScriptsReview.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+
+            // Row wrapping and height adjustment
+            dgScriptsReview.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgScriptsReview.DefaultCellStyle.Padding = new Padding(0, 5, 0, 5);
+            dgScriptsReview.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+            // Checkbox Column
+            DataGridViewCheckBoxColumn checkboxColumn = new DataGridViewCheckBoxColumn
+            {
+                HeaderText = "Accept",
+                Name = "AcceptColumn",
+                Width = 80,
+                ReadOnly = false // Allows user selection
+            };
+            dgScriptsReview.Columns.Add(checkboxColumn);
+
+            // scripts Column
+            DataGridViewTextBoxColumn scriptsColumn = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Scripts",
+                Name = "ScriptsColumn",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                ReadOnly = true
+            };
+            dgScriptsReview.Columns.Add(scriptsColumn);
+
+            dgScriptsReview.RowCount = REVIEW_GRID_INIT_NUM_ROWS;
+        }
+
+        private void AdjustReviewGridSize()
+        {
+            // Get total height needed for all rows and headers
+            int totalRowHeight = dgScriptsReview.Rows.Cast<DataGridViewRow>().Sum(r => r.Height);
+            int totalHeight = totalRowHeight + dgScriptsReview.ColumnHeadersHeight;
+
+            // Get total width of columns + padding
+            int totalWidth = dgScriptsReview.Columns.Cast<DataGridViewColumn>().Sum(c => c.Width);
+
+            // Resize DataGridView to match content
+            dgScriptsReview.Size = new Size(totalWidth, totalHeight);
+        }
+
+        private void PopulateScriptsReviewGrid()
+        {
+            dgScriptsReview.Rows.Clear();
+
+            var scripts = _inputFileProcessor.ProcessInputFile(_inputFilePath);
+
+            foreach (var script in scripts)
+            {
+                dgScriptsReview.Rows.Add(false, script);
             }
         }
     }
