@@ -1,37 +1,35 @@
 using Robin.InputFileProcessor;
-using System.Windows.Forms;
 
 namespace Robin
 {
     public partial class Robin : Form
     {
-        const int REVIEW_GRID_INIT_NUM_ROWS = 13;
-
         private string _inputFilePath; 
         private readonly IInputFileProcessor _inputFileProcessor;
+        private readonly ScriptReviewGridManager _scriptReviewGridManager;
 
-        public Robin(IInputFileProcessor inputFileProcessor)
+        public Robin(IInputFileProcessor inputFileProcessor, ScriptReviewGridManager scriptReviewGridManager)
         {
             InitializeComponent();
 
             _inputFileProcessor = inputFileProcessor ?? throw new ArgumentNullException(nameof(inputFileProcessor));
+            _scriptReviewGridManager = scriptReviewGridManager ?? throw new ArgumentNullException(nameof(scriptReviewGridManager));
 
             _inputFilePath = string.Empty;
 
-            InputFileBtn.Click += this.InputFileBtn_Click;
-          
+            btnInputFile.Click += this.InputFileBtn_Click;
+            btnContinue.Enabled = false;
         }
-
+            
         private void Robin_Load(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(_inputFilePath))
             {
                 lblFilePath.Text =  string.Empty;
-
-                InitializeScriptsReviewGrid();
-                AdjustReviewGridSize();
+             _scriptReviewGridManager.InitializeGrid(dgScriptsReview);
             }
         }
+
         private void InputFileBtn_Click(object? sender, EventArgs e)
         {
             using (var openFileDialog = new OpenFileDialog())
@@ -43,73 +41,13 @@ namespace Robin
                 {
                     _inputFilePath = openFileDialog.FileName;
                     lblFilePath.Text = _inputFilePath;
-
-                    PopulateScriptsReviewGrid();
-
                     tbOutputConsole.AppendText($"{Environment.NewLine} Input File Selected: {_inputFilePath}");
 
-                    
+                    var scripts = _inputFileProcessor.ProcessInputFile(_inputFilePath);
+                    _scriptReviewGridManager.PopulateGrid(scripts);
+
+                    tbOutputConsole.AppendText($"{Environment.NewLine} Available scripts loaded. Please review and accept each script individaully and click continue");
                 }
-            }
-        }
-
-       private void InitializeScriptsReviewGrid()
-       {
-            dgScriptsReview.Columns.Clear();
-            dgScriptsReview.Rows.Clear();
-            dgScriptsReview.RowHeadersVisible = false;
-            dgScriptsReview.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
-
-            // Row wrapping and height adjustment
-            dgScriptsReview.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dgScriptsReview.DefaultCellStyle.Padding = new Padding(0, 5, 0, 5);
-            dgScriptsReview.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
-            // Checkbox Column
-            DataGridViewCheckBoxColumn checkboxColumn = new DataGridViewCheckBoxColumn
-            {
-                HeaderText = "Accept",
-                Name = "AcceptColumn",
-                Width = 80,
-                ReadOnly = false // Allows user selection
-            };
-            dgScriptsReview.Columns.Add(checkboxColumn);
-
-            // scripts Column
-            DataGridViewTextBoxColumn scriptsColumn = new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Scripts",
-                Name = "ScriptsColumn",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                ReadOnly = true
-            };
-            dgScriptsReview.Columns.Add(scriptsColumn);
-
-            dgScriptsReview.RowCount = REVIEW_GRID_INIT_NUM_ROWS;
-        }
-
-        private void AdjustReviewGridSize()
-        {
-            // Get total height needed for all rows and headers
-            int totalRowHeight = dgScriptsReview.Rows.Cast<DataGridViewRow>().Sum(r => r.Height);
-            int totalHeight = totalRowHeight + dgScriptsReview.ColumnHeadersHeight;
-
-            // Get total width of columns + padding
-            int totalWidth = dgScriptsReview.Columns.Cast<DataGridViewColumn>().Sum(c => c.Width);
-
-            // Resize DataGridView to match content
-            dgScriptsReview.Size = new Size(totalWidth, totalHeight);
-        }
-
-        private void PopulateScriptsReviewGrid()
-        {
-            dgScriptsReview.Rows.Clear();
-
-            var scripts = _inputFileProcessor.ProcessInputFile(_inputFilePath);
-
-            foreach (var script in scripts)
-            {
-                dgScriptsReview.Rows.Add(false, script);
             }
         }
     }

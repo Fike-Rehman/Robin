@@ -31,7 +31,7 @@ namespace Robin
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            InputFileBtn = new Button();
+            btnInputFile = new Button();
             lblFilePath = new Label();
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
@@ -47,12 +47,12 @@ namespace Robin
             // 
             // InputFileBtn
             // 
-            InputFileBtn.Location = new Point(21, 56);
-            InputFileBtn.Name = "InputFileBtn";
-            InputFileBtn.Size = new Size(132, 40);
-            InputFileBtn.TabIndex = 0;
-            InputFileBtn.Text = "Input File ...";
-            InputFileBtn.UseVisualStyleBackColor = true;
+            btnInputFile.Location = new Point(21, 56);
+            btnInputFile.Name = "InputFileBtn";
+            btnInputFile.Size = new Size(132, 40);
+            btnInputFile.TabIndex = 0;
+            btnInputFile.Text = "Input File ...";
+            btnInputFile.UseVisualStyleBackColor = true;
             // 
             // lblFilePath
             // 
@@ -152,7 +152,7 @@ namespace Robin
             ClientSize = new Size(1690, 984);
             Controls.Add(grpBoxText2Speech);
             Controls.Add(lblFilePath);
-            Controls.Add(InputFileBtn);
+            Controls.Add(btnInputFile);
             Controls.Add(groupBox1);
             Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             FormBorderStyle = FormBorderStyle.Fixed3D;
@@ -173,7 +173,7 @@ namespace Robin
 
         #endregion
 
-        private Button InputFileBtn;
+        private Button btnInputFile;
         private Label lblFilePath;
         private TabPage tabPage1;
         private TabPage tabPage2;
