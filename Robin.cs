@@ -19,14 +19,21 @@ namespace Robin
 
             btnInputFile.Click += this.InputFileBtn_Click;
             btnContinue.Enabled = false;
+
+            _scriptReviewGridManager.SetUpReviewGrid(dgScriptsReview, UpdateContinueButtonState);
         }
-            
+
+        private void UpdateContinueButtonState(bool allChecked)
+        {
+            btnContinue.Enabled = allChecked;
+        }
+ 
         private void Robin_Load(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(_inputFilePath))
             {
                 lblFilePath.Text =  string.Empty;
-             _scriptReviewGridManager.InitializeGrid(dgScriptsReview);
+                _scriptReviewGridManager.InitializeGrid();
             }
         }
 

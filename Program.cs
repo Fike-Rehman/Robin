@@ -28,7 +28,7 @@ namespace Robin
         {
             services.AddSingleton<Robin>();
             services.AddSingleton<IInputFileProcessor, InputCSVFileProcessor>();
-            services.AddSingleton<ScriptReviewGridManager>();
+            services.AddSingleton<ScriptReviewGridManager>();      
         }
     }
 }

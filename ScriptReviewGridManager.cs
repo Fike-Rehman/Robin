@@ -2,17 +2,32 @@
 {
     public class ScriptReviewGridManager
     {
-        const int REVIEW_GRID_INIT_NUM_ROWS = 13;
+        const int REVIEW_GRID_INIT_NUM_ROWS = 12;
 
         private DataGridView? _dgScriptsReview;
+        private Action<bool>? _updateContineButtonState;
 
-        public void InitializeGrid(DataGridView reviewGrid)
+        // NOTE: We had to add this method as this cannot be done in the constructor
+        // due do it interering with Dependency Injection. We are passing in DataGridView
+        // UI element and that causes a circular dependency.
+        public void SetUpReviewGrid(DataGridView reviewGrid, Action<bool> updateContineButtonState)
         {
             _dgScriptsReview = reviewGrid ?? throw new ArgumentNullException(nameof(reviewGrid));
+            _updateContineButtonState = updateContineButtonState;
 
-            _dgScriptsReview.Columns.Clear();
-            _dgScriptsReview.Rows.Clear();
-            _dgScriptsReview.RowHeadersVisible = false;
+            // 
+            // Setup event handler
+            _dgScriptsReview.CellContentClick += OnCheckboxClicked;
+            _dgScriptsReview.AllowUserToAddRows = false;
+        }
+
+        public void InitializeGrid()
+        {
+            if (_dgScriptsReview == null) { return; }
+
+            _dgScriptsReview!.Columns.Clear();
+            _dgScriptsReview!.Rows.Clear();
+            _dgScriptsReview!.RowHeadersVisible = false;
             _dgScriptsReview.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
 
             // Row wrapping and height adjustment
@@ -70,6 +85,22 @@
 
             // Resize DataGridView to match content
             _dgScriptsReview.Size = new Size(totalWidth, totalHeight);
+        }
+
+        private void OnCheckboxClicked(object? sender, DataGridViewCellEventArgs e)
+        {
+            if (_dgScriptsReview == null || _updateContineButtonState == null) return;
+
+            if (e.ColumnIndex == _dgScriptsReview?.Columns["AcceptColumn"].Index && e.RowIndex >= 0)
+            {
+                _dgScriptsReview.CommitEdit(DataGridViewDataErrorContexts.Commit);
+
+                bool allChecked = _dgScriptsReview.Rows.Cast<DataGridViewRow>()
+                                .All(row => Convert.ToBoolean(row.Cells["AcceptColumn"].Value) == true);
+
+                _updateContineButtonState(allChecked);
+
+            }
         }
     }
 }
